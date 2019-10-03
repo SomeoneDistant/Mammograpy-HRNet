@@ -1,0 +1,77 @@
+GPUS: (0,1,2,3)
+
+OUTPUT_DIR: '/home/yy475/MammoProject/MammoNet'
+
+WORKERS: 12
+
+DATASET:
+  DATASET: CBIS-DDSM
+  ROOT: '/rds/project/t2_vol2/rds-t2-cs056/yy475/data'
+  NUM_CLASSES: 5
+
+MODEL:
+  NAME: seg_hrnet
+  PRETRAINED: '/home/yy475/MammoProject/MammoNet/checkpoint/hrnetv2_w48_imagenet_pretrained.pth'
+  EXTRA:
+    FINAL_CONV_KERNEL: 1
+    STAGE2:
+      NUM_MODULES: 1
+      NUM_BRANCHES: 2
+      BLOCK: BASIC
+      NUM_BLOCKS:
+      - 4
+      - 4
+      NUM_CHANNELS:
+      - 48
+      - 96
+      FUSE_METHOD: SUM
+    STAGE3:
+      NUM_MODULES: 4
+      NUM_BRANCHES: 3
+      BLOCK: BASIC
+      NUM_BLOCKS:
+      - 4
+      - 4
+      - 4
+      NUM_CHANNELS:
+      - 48
+      - 96
+      - 192
+      FUSE_METHOD: SUM
+    STAGE4:
+      NUM_MODULES: 3
+      NUM_BRANCHES: 4
+      BLOCK: BASIC
+      NUM_BLOCKS:
+      - 4
+      - 4
+      - 4
+      - 4
+      NUM_CHANNELS:
+      - 48
+      - 96
+      - 192
+      - 384
+      FUSE_METHOD: SUM
+
+LOSS:
+  USE_OHEM: true
+  OHEMTHRES: 0.9
+  OHEMKEEP: 131072
+
+TRAIN:
+  IMAGE_SIZE:
+  - 1024
+  - 512
+  BATCH_SIZE_PER_GPU: 2
+  SHUFFLE: true
+  BEGIN_EPOCH: 0
+  END_EPOCH: 50
+  RESUME: true
+  OPTIMIZER: sgd
+  LR: 0.01
+  WD: 0.0005
+  MOMENTUM: 0.9
+
+TEST:
+  BATCH_SIZE_PER_GPU: 1
